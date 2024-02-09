@@ -29,12 +29,42 @@ class AroonIndicator(IndicatorMixin):
     """
 
     def __init__(self, close: pd.Series, window: int = 25, fillna: bool = False):
+        """This function initializes the class with the given parameters and runs the processing logic.
+        Parameters:
+            - close (pd.Series): A Pandas Series containing the closing prices of a stock.
+            - window (int): The number of periods to use for calculating the simple moving average. Default is 25.
+            - fillna (bool): Whether to fill any missing values in the closing prices with the last available value. Default is False.
+        Returns:
+            - None: This function does not return any value.
+        Processing Logic:
+            - Initialize class with given parameters.
+            - Run processing logic.
+            - Calculate simple moving average using the given window.
+            - Fill any missing values in the closing prices if specified."""
+        
         self._close = close
         self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
+        """Calculates the Aroon Up and Aroon Down indicators for a given dataset.
+        Parameters:
+            - self (object): The object containing the dataset to be analyzed.
+            - min_periods (int): The minimum number of periods required to calculate the indicators.
+            - rolling_close (object): The rolling window object used to calculate the indicators.
+            - x (float): The value of the current data point in the rolling window.
+        Returns:
+            - aroon_up (float): The Aroon Up indicator value for each data point.
+            - aroon_down (float): The Aroon Down indicator value for each data point.
+        Processing Logic:
+            - Calculates the Aroon Up and Aroon Down indicators using the rolling window object.
+            - The minimum number of periods required to calculate the indicators is set to 0 if the fillna parameter is False.
+            - The Aroon Up and Aroon Down indicators are calculated by finding the index of the maximum and minimum values in the rolling window, respectively, and dividing by the window size.
+            - The result is multiplied by 100 to get a percentage value.
+            - The apply function is used to apply the calculation to each data point in the rolling window.
+            - The raw parameter is set to True to prevent any additional processing on the data."""
+        
         min_periods = 0 if self._fillna else self._window
         rolling_close = self._close.rolling(
             self._window, min_periods=min_periods)
@@ -98,6 +128,22 @@ class MACD(IndicatorMixin):
         window_sign: int = 9,
         fillna: bool = False,
     ):
+        """Function for calculating the MACD (Moving Average Convergence Divergence) indicator.
+        Parameters:
+            - close (pd.Series): A series of closing prices.
+            - window_slow (int): The number of periods to use for the slow EMA (default=26).
+            - window_fast (int): The number of periods to use for the fast EMA (default=12).
+            - window_sign (int): The number of periods to use for the signal line (default=9).
+            - fillna (bool): Whether to fill any missing values with 0 (default=False).
+        Returns:
+            - macd (pd.Series): A series of MACD values.
+        Processing Logic:
+            - Calculates the EMA for the slow and fast windows.
+            - Calculates the MACD line by subtracting the slow EMA from the fast EMA.
+            - Calculates the signal line by taking the EMA of the MACD line.
+            - Calculates the histogram by subtracting the signal line from the MACD line.
+            - If fillna is True, any missing values will be filled with 0."""
+        
         self._close = close
         self._window_slow = window_slow
         self._window_fast = window_fast
@@ -106,6 +152,23 @@ class MACD(IndicatorMixin):
         self._run()
 
     def _run(self):
+        """Calculates the MACD, MACD signal, and MACD difference using the exponential moving average (EMA) of the close price.
+        Parameters:
+            - self (object): Instance of the class.
+            - _window_fast (int): Number of periods for fast EMA.
+            - _window_slow (int): Number of periods for slow EMA.
+            - _window_sign (int): Number of periods for signal EMA.
+            - _fillna (str): Method for filling missing values in the data.
+        Returns:
+            - _macd (float): MACD value.
+            - _macd_signal (float): MACD signal value.
+            - _macd_diff (float): MACD difference value.
+        Processing Logic:
+            - Calculates EMA for fast and slow windows.
+            - Calculates MACD as the difference between fast and slow EMA.
+            - Calculates EMA for signal window using MACD.
+            - Calculates MACD difference as the difference between MACD and MACD signal."""
+        
         self._emafast = _ema(self._close, self._window_fast, self._fillna)
         self._emaslow = _ema(self._close, self._window_slow, self._fillna)
         self._macd = self._emafast - self._emaslow
@@ -158,6 +221,19 @@ class EMAIndicator(IndicatorMixin):
     """
 
     def __init__(self, close: pd.Series, window: int = 14, fillna: bool = False):
+        """Initializes the object with the given parameters.
+        Parameters:
+            - close (pd.Series): A series of closing prices.
+            - window (int): The number of periods to use for the calculation.
+            - fillna (bool): Whether to fill missing values with the default value.
+        Returns:
+            - None: The function does not return anything.
+        Processing Logic:
+            - Initialize the object with the given parameters.
+            - Set the closing prices, window size, and fillna flag.
+            - If fillna is True, missing values will be filled with the default value.
+            - If fillna is False, missing values will not be filled."""
+        
         self._close = close
         self._window = window
         self._fillna = fillna
@@ -182,6 +258,18 @@ class SMAIndicator(IndicatorMixin):
     """
 
     def __init__(self, close: pd.Series, window: int, fillna: bool = False):
+        """Calculates the simple moving average (SMA) of a given time series.
+        Parameters:
+            - close (pd.Series): A time series of closing prices.
+            - window (int): The number of periods to use in the calculation.
+            - fillna (bool, optional): Whether to fill any missing values with 0. Defaults to False.
+        Returns:
+            - pd.Series: A time series of SMA values.
+        Processing Logic:
+            - Calculate the mean of the previous n periods.
+            - Use the window parameter to determine the number of periods.
+            - If fillna is True, replace any missing values with 0."""
+        
         self._close = close
         self._window = window
         self._fillna = fillna
@@ -206,12 +294,41 @@ class WMAIndicator(IndicatorMixin):
     """
 
     def __init__(self, close: pd.Series, window: int = 9, fillna: bool = False):
+        """Initialize a new object of a class.
+        Parameters:
+            - close (pd.Series): The close prices.
+            - window (int): The window size for calculating the moving average.
+            - fillna (bool): Whether to fill NaN values with 0 or not.
+        Returns:
+            - None: The function does not return anything.
+        Processing Logic:
+            - Initialize object with given parameters.
+            - Set close, window, and fillna attributes.
+            - Run the function to calculate the moving average.
+            - If fillna is True, fill NaN values with 0."""
+        
         self._close = close
         self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
+        """Calculates the weighted moving average of a given time series.
+        Parameters:
+            - self (object): The object containing the time series data.
+            - _weight (pandas.Series): A series of weights used in the calculation.
+        Returns:
+            - pandas.Series: A series containing the weighted moving average values.
+        Processing Logic:
+            - Calculate weights based on window size.
+            - Define a function for calculating weighted average.
+            - Apply the weighted average function to the time series data using the calculated weights.
+        Example:
+            _run(self)
+            # Calculates the weighted moving average of the time series data stored in self._close.
+            # Uses a window size of self._window.
+            # Returns a series of weighted moving average values."""
+        
         _weight = pd.Series(
             [
                 i * 2 / (self._window * (self._window + 1))
@@ -254,12 +371,16 @@ class TRIXIndicator(IndicatorMixin):
     """
 
     def __init__(self, close: pd.Series, window: int = 15, fillna: bool = False):
+        """"""
+        
         self._close = close
         self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
+        """"""
+        
         ema1 = _ema(self._close, self._window, self._fillna)
         ema2 = _ema(ema1, self._window, self._fillna)
         ema3 = _ema(ema2, self._window, self._fillna)
@@ -303,6 +424,8 @@ class MassIndex(IndicatorMixin):
         window_slow: int = 25,
         fillna: bool = False,
     ):
+        """"""
+        
         self._high = high
         self._low = low
         self._window_fast = window_fast
@@ -311,6 +434,8 @@ class MassIndex(IndicatorMixin):
         self._run()
 
     def _run(self):
+        """"""
+        
         min_periods = 0 if self._fillna else self._window_slow
         amplitude = self._high - self._low
         ema1 = _ema(amplitude, self._window_fast, self._fillna)
@@ -356,6 +481,8 @@ class IchimokuIndicator(IndicatorMixin):
         visual: bool = False,
         fillna: bool = False,
     ):
+        """"""
+        
         self._high = high
         self._low = low
         self._window1 = window1
@@ -366,6 +493,8 @@ class IchimokuIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
+        """"""
+        
         min_periods_n1 = 0 if self._fillna else self._window1
         min_periods_n2 = 0 if self._fillna else self._window2
         self._conv = 0.5 * (
@@ -471,6 +600,8 @@ class KSTIndicator(IndicatorMixin):
         nsig: int = 9,
         fillna: bool = False,
     ):
+        """"""
+        
         self._close = close
         self._r1 = roc1
         self._r2 = roc2
@@ -485,6 +616,8 @@ class KSTIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
+        """"""
+        
         min_periods_n1 = 0 if self._fillna else self._window1
         min_periods_n2 = 0 if self._fillna else self._window2
         min_periods_n3 = 0 if self._fillna else self._window3
@@ -588,12 +721,16 @@ class DPOIndicator(IndicatorMixin):
     """
 
     def __init__(self, close: pd.Series, window: int = 20, fillna: bool = False):
+        """"""
+        
         self._close = close
         self._window = window
         self._fillna = fillna
         self._run()
 
     def _run(self):
+        """"""
+        
         min_periods = 0 if self._fillna else self._window
         self._dpo = (
             self._close.shift(
@@ -641,6 +778,8 @@ class CCIIndicator(IndicatorMixin):
         constant: float = 0.015,
         fillna: bool = False,
     ):
+        """"""
+        
         self._high = high
         self._low = low
         self._close = close
@@ -650,6 +789,8 @@ class CCIIndicator(IndicatorMixin):
         self._run()
 
     def _run(self):
+        """"""
+        
         def _mad(x):
             return np.mean(np.abs(x - np.mean(x)))
 
