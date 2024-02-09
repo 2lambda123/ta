@@ -1007,9 +1007,9 @@ class PSARIndicator(IndicatorMixin):
                     elif high1 > self._psar.iloc[i]:
                         self._psar.iloc[i] = high1
 
-            up_trend = up_trend != reversal  # XOR
+# XOR
 
-            if up_trend:
+            if up_trend := up_trend != reversal:
                 self._psar_up.iloc[i] = self._psar.iloc[i]
             else:
                 self._psar_down.iloc[i] = self._psar.iloc[i]
